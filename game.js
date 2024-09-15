@@ -1,4 +1,5 @@
 import init, { Game } from './pkg/game_wasm.js';
+import spaceshipImageSrc from './images/spaceship.png';
 
 async function initGame() {
     await init();
@@ -15,7 +16,7 @@ async function initGame() {
 
     // Load spaceship image
     const spaceshipImage = new Image();
-    spaceshipImage.src = 'images/spaceship.png';
+    spaceshipImage.src = spaceshipImageSrc;
 
     function renderMap() {
         const mapData = game.get_visible_map();
