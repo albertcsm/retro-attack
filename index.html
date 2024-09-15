@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASM Game</title>
+    <!-- Add this script for live-server auto-reload -->
+    <script>
+        document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+        ':35729/livereload.js?snipver=1"></' + 'script>')
+    </script>
+</head>
+<body>
+    <h1>Simple Rust-WASM Game</h1>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <style>
+        #gameCanvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+    <p>Score: <span id="score">0</span></p>
+    <button id="increment">Increase Score</button>
+
+    <script type="module">
+        import init, { Game } from './pkg/game_wasm.js';
+
+        async function run() {
+            await init();
+            let game = new Game();
+
+            const scoreElement = document.getElementById("score");
+            const button = document.getElementById("increment");
+
+            button.addEventListener("click", () => {
+                game.update_score(1);
+                scoreElement.textContent = game.get_score();
+            });
+        }
+
+        run();
+    </script>
+</body>
+</html>
