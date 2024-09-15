@@ -3,7 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WASM Game</title>
+    <title>Retro Attack</title>
+    <style>
+        body {
+            background-color: #252525; /* Light grey background */
+            border: 5px solid red; /* Add red border */
+            border-radius: 20px; /* Add rounded corners */
+            padding: 20px; /* Add padding */
+            min-height: 95vh; /* Ensure the border covers most of the viewport height */
+            box-sizing: border-box; /* Include padding in the element's total width and height */
+        }
+        #gameCanvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+        #startButton {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: rgb(209, 0, 0);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Press Start 2P', cursive;
+            transition: all 0.1s ease;
+            box-shadow: 0 6px 0 #800000;
+            position: relative;
+            top: 0;
+        }
+        #startButton:hover {
+            background-color: #ff0000;
+        }
+        #startButton:active {
+            top: 6px;
+            box-shadow: 0 0 0 #800000;
+        }
+        #startButton:disabled {
+            background-color: #666666;
+            box-shadow: 0 6px 0 #333333;
+            cursor: not-allowed;
+        }
+        #startButton:disabled:active {
+            top: 0;
+            box-shadow: 0 6px 0 #333333;
+        }
+        #gameStatus {
+            font-size: 18px;
+            font-weight: bold;
+            height: 20px; /* Added fixed height */
+            text-align: center;
+            color: white; /* Add this line to make the text white */
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 36px;
+            text-shadow: 3px 3px #000000;
+            margin-top: 20px;
+        }
+    </style>
+    <!-- Add this link to import the 'Press Start 2P' font -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <!-- Add this script for live-server auto-reload -->
     <script>
         document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
@@ -11,35 +75,12 @@
     </script>
 </head>
 <body>
-    <h1>Simple Rust-WASM Game</h1>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <style>
-        #gameCanvas {
-            border: 1px solid black;
-            display: block;
-            margin: 20px auto;
-        }
-    </style>
-    <p>Score: <span id="score">0</span></p>
-    <button id="increment">Increase Score</button>
-
-    <script type="module">
-        import init, { Game } from './pkg/game_wasm.js';
-
-        async function run() {
-            await init();
-            let game = new Game();
-
-            const scoreElement = document.getElementById("score");
-            const button = document.getElementById("increment");
-
-            button.addEventListener("click", () => {
-                game.update_score(1);
-                scoreElement.textContent = game.get_score();
-            });
-        }
-
-        run();
-    </script>
+    <h1>Retro Attack</h1>
+    
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="gameStatus">Press ⬆️ up / ⬇️ down to move, avoid the obstacles!</div>
+    <button id="startButton">Start</button>
+    
+    <script type="module" src="game.js"></script>
 </body>
 </html>
