@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 
 module.exports = {
   entry: './game.js',  // Ensure this points to your main JavaScript file
@@ -30,8 +31,14 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',  // This will use your existing index.html as a template
-      inject: 'body',  // This will inject the script tag in the body
+      template: './index.html',
+      inject: 'body',
+    }),
+    new WasmPackPlugin({
+      crateDirectory: path.resolve(__dirname, '.'),
+      extraArgs: '--target web',
+      outDir: "pkg",
+      outName: "game_wasm",
     }),
   ],
   devServer: {
