@@ -117,7 +117,7 @@ async function initGame() {
             game = new Game(); // Reset the game
             game.start();
             gameStarted = true;
-            updateInterval = setInterval(updateGame, 500);
+            updateInterval = setInterval(updateGame, 750);
             startButton.disabled = true;
             
             // Reset game status

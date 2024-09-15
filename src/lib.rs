@@ -57,31 +57,36 @@ impl Game {
             .collect()
     }
 
+    fn check_collision(&self) -> bool {
+        let player_x = self.scroll_x as usize;
+        let player_y = self.player.y as usize;
+        
+        if player_y < self.height() && player_x < self.width() {
+            self.map[player_y][player_x] == 1  // 1 represents '#'
+        } else {
+            false  // Consider out-of-bounds as no collision
+        }
+    }
+
     pub fn update(&mut self) {
         if !self.started || self.ended {
             return;  // Don't update if the game hasn't started or has ended
         }
 
-        // Collision detection
-        let player_x = self.scroll_x as usize;
-        let player_y = self.player.y as usize;
+        // Increase scroll_x
+        self.scroll_x += 1;
 
-        if player_y < self.height() && player_x < self.width() {
-            if self.map[player_y][player_x] == 1 {  // 1 represents '#'
-                self.ended = true;
-                return;  // End the game if collision detected
-            }
+        if self.check_collision() {
+            self.ended = true;
+            return;  // End the game if collision detected
         }
 
         // Update win condition
-        if player_x >= self.width() - 1 {
+        if self.scroll_x as usize >= self.width() - 1 {
             self.ended = true;
             self.won = true;  // Set won to true when reaching the last column
             return;
         }
-
-        // Increase scroll_x
-        self.scroll_x += 1;
     }
 
     pub fn get_player(&self) -> Player {
@@ -91,12 +96,18 @@ impl Game {
     pub fn move_up(&mut self) {
         if self.started && !self.ended && self.player.y > 0 {
             self.player.y -= 1;
+            if self.check_collision() {
+                self.ended = true;
+            }
         }
     }
 
     pub fn move_down(&mut self) {
         if self.started && !self.ended && self.player.y < (self.height() - 1) as u8 {
             self.player.y += 1;
+            if self.check_collision() {
+                self.ended = true;
+            }
         }
     }
 
