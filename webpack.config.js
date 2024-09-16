@@ -39,6 +39,10 @@ module.exports = {
       extraArgs: '--target web',
       outDir: "pkg",
       outName: "game_wasm",
+      watchDirectories: [
+        path.resolve(__dirname, "src"),
+        path.resolve(__dirname, "levels"),
+      ],
     }),
   ],
   devServer: {

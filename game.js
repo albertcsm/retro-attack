@@ -1,5 +1,6 @@
 import init, { Game } from './pkg/game_wasm.js';
 import spaceshipImageSrc from './images/spaceship.png';
+import rocketImageSrc from './images/rocket.png';
 
 async function initGame() {
     await init();
@@ -17,6 +18,10 @@ async function initGame() {
     // Load spaceship image
     const spaceshipImage = new Image();
     spaceshipImage.src = spaceshipImageSrc;
+
+    // Load rocket image
+    const rocketImage = new Image();
+    rocketImage.src = rocketImageSrc;
 
     function renderMap() {
         const mapData = game.get_visible_map();
@@ -36,7 +41,21 @@ async function initGame() {
                 ctx.lineWidth = 3;
                 ctx.strokeStyle = tileType === 1 ? "#00FFFF" : "#080808";
                 ctx.strokeRect(x * tileSize + padding, y * tileSize + padding, tileSize - 2 * padding, tileSize - 2 * padding);
+
+                if (tileType === 2) {
+                    renderRocket(x, y);
+                }
             }
+        }
+    }
+
+    function renderRocket(x, y) {
+        if (rocketImage.complete) {
+            ctx.drawImage(rocketImage, x * tileSize, y * tileSize, tileSize, tileSize);
+        } else {
+            // Fallback to a colored rectangle if the image hasn't loaded
+            ctx.fillStyle = "yellow";
+            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
         }
     }
 
@@ -51,9 +70,26 @@ async function initGame() {
         }
     }
 
+    function renderBullets() {
+        const bullets = game.bullets();
+        const bulletRadius = 5; // Radius of the bullet circle
+        const scroll_x = game.get_visible_x(); // Get the current scroll_x value
+
+        bullets.forEach(bullet => {
+            ctx.fillStyle = 'cyan';
+            // Calculate the center position of the tile, adjusting for scroll_x
+            const centerX = (bullet.x - scroll_x) * tileSize + (tileSize / 2);
+            const centerY = bullet.y * tileSize + (tileSize / 2);
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, bulletRadius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
     let keys = {
         "ArrowUp": 0,
-        "ArrowDown": 0
+        "ArrowDown": 0,
+        " ": 0  // Add Space key
     };
 
     window.addEventListener("keydown", (e) => {
@@ -77,12 +113,17 @@ async function initGame() {
             game.move_down();
             keys["ArrowDown"] = 2;
         }
+        if (keys[" "] === 1) {
+            game.fire();
+            keys[" "] = 2;  // Prevent continuous firing while holding the key
+        }
     }
 
     function gameLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         renderMap();
         renderPlayer();
+        renderBullets();
         if (gameStarted) {
             handleInput();
         }
@@ -117,7 +158,7 @@ async function initGame() {
             game = new Game(); // Reset the game
             game.start();
             gameStarted = true;
-            updateInterval = setInterval(updateGame, 750);
+            updateInterval = setInterval(updateGame, 375);
             startButton.disabled = true;
             
             // Reset game status
